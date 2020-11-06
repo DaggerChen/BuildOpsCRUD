@@ -1,8 +1,26 @@
-# Getting Started with Create React App
+# Employee - Skill CRUD Web App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is a full-stack web app that consumes GraphQL API to handle queries that create/read/update/delete Employee and Skill objects.
 
-## Available Scripts
+This project uses:
+
+1. **AppSync** to create GraphQL APIs
+2. **AWS Amplify** for frontend to backend connectivity
+3. **React Apollo** as GraphQL client
+4. **Material UI** for frontend design components
+5. **Amazon S3** to host the web application.
+
+Here is the [link](http://20201106-daggercodechallenge-dev.s3-website-eu-west-1.amazonaws.com/) to the deployed website.
+
+## Install Packages
+
+### `npm install`
+
+Install the dependencies in the local node_modules folder.
+
+By default, `npm install` will install all modules listed as dependencies in [`package.json`](https://docs.npmjs.com/cli/v6/configuring-npm/package-json). 
+
+## Run in Local
 
 In the project directory, you can run:
 
@@ -14,57 +32,38 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
 
-### `npm test`
+## Deploy 
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### `npm install -g @aws-amplify/cli`
 
-### `npm run build`
+The first step is to install the Amplify command line tool to be able to create and maintain serverless backends on AWS. It is also the main tool to manage with AWS services.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### `amplify configure`
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+The next step is to run `amplify configure` command to configure your cli with your AWS account if you haven't configured your AWS account yet.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### `amplify init`
 
-### `npm run eject`
+Initialize the project and connect the project to the cloud.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+![image-20201106030614211](C:\Users\51070\AppData\Roaming\Typora\typora-user-images\image-20201106030614211.png)
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### `amplify hosting add`
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+To deploy this app to Amazon S3, we need to run `amplify hosting add` command to add a host. 
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Select Amazon CloudFront and S3 as the plugin module to execute and then select S3 environment DEV (S3 only with HTTP). Then follow the next steps to name a S3 bucket for hosting and we are close to victory!
 
-## Learn More
+### `amplify publish`
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+This is the final step to deploy this web app. By running `amplify publish` we deploy the project to the host we just added, and now the project is deployed online!
 
-To learn React, check out the [React documentation](https://reactjs.org/).
 
-### Code Splitting
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
 
-### Analyzing the Bundle Size
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
 
-### Making a Progressive Web App
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
 
-### Advanced Configuration
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
 
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
