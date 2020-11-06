@@ -1,0 +1,15 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-crud-dev-235852-authRole",
+      "UnauthRoleArn": "arn:aws:iam::583401897475:role/amplify-crud-dev-235852-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::583401897475:role/amplify-crud-dev-235852-authRole",
+      "Region": "eu-west-1",
+      "DeploymentBucketName": "amplify-crud-dev-235852-deployment",
+      "UnauthRoleName": "amplify-crud-dev-235852-unauthRole",
+      "StackName": "amplify-crud-dev-235852",
+      "StackId": "arn:aws:cloudformation:eu-west-1:583401897475:stack/amplify-crud-dev-235852/8b8df890-1b46-11eb-9ce1-0629595482ce",
+      "AmplifyAppId": "d56py7ttwdgej"
+    }
+  }
+}
