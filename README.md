@@ -46,8 +46,6 @@ The next step is to run `amplify configure` command to configure your cli with y
 
 Initialize the project and connect the project to the cloud.
 
-![image-20201106030614211](C:\Users\51070\AppData\Roaming\Typora\typora-user-images\image-20201106030614211.png)
-
 ### `amplify hosting add`
 
 To deploy this app to Amazon S3, we need to run `amplify hosting add` command to add a host. 
