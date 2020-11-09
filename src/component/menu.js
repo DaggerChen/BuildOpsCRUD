@@ -34,7 +34,7 @@ const Menu = ({ callback }) => {
 	// The skill filter is used to get specific employees by skill required
 	const [skillFilter, setSkillFilter] = useState({})
 	const { data: filteredSkillData, loading: filterSkillLoading } = useQuery(gql(listSkills), { variables: { filter: skillFilter } })
-	
+
 	// Initialize fields (employee and skills) of the form
 	const [employee, setEmployee] = useState({ id: '', firstname: '', lastname: '' })
 	const [skills, setSkills] = useState([])
@@ -64,8 +64,6 @@ const Menu = ({ callback }) => {
 		}
 		else callback(data)
 	}, [skillFilter, employeeFilter, callback, data, filteredSkillData, filteredEmployeeData])
-
-	
 
 	// Contains all skills currently in database
 	let allSkills = []
@@ -102,8 +100,8 @@ const Menu = ({ callback }) => {
 	}
 
 	// Handle search query by specifying one skill
-	const handleSearchSkill = async() => {
-		let query = {name: {contains: skills[0]}}
+	const handleSearchSkill = async () => {
+		let query = { name: { contains: skills[0] } }
 		if (query) setSkillFilter(query)
 	}
 
@@ -187,10 +185,6 @@ const Menu = ({ callback }) => {
 								<TextField label='Last Name' value={employee.lastname}
 									onChange={event => setEmployeeInput('lastname', event.target.value)} />
 							</div>
-							{/* <div>
-								<TextField label='Skill' value={skillString}
-									onChange={event => { setSkillInput(event.target.value) }} />
-							</div> */}
 							<div>
 								<Button variant='outlined' onClick={handleClear} style={{ marginTop: '20px', float: "left" }}> Clear </Button>
 								<Button variant='outlined' onClick={handleSearchEmployee} style={{ marginTop: '20px', float: "right" }}> Search </Button>
