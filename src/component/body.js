@@ -22,7 +22,7 @@ const useStyles = makeStyles(() => ({
 		width: '90%'
 	},
 	menu: {
-		minWidth: 240
+		minWidth: 150
 	},
 	container: {
 		display: 'flex',

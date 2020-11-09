@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery, useMutation } from 'react-apollo';
 import gql from "graphql-tag";
 
@@ -9,6 +9,7 @@ import { addEmployee, addLink, addSkill } from '../functions/mutationFunctions';
 import { Typography, TextField, Button } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
+import BuildIcon from '@material-ui/icons/Build';
 import { Accordion, AccordionSummary, AccordionDetails } from './accordion';
 import Loader from './loader';
 import SimpleAlerts from './alert';
@@ -26,6 +27,14 @@ const Menu = ({ callback }) => {
 	// Fetch all skills
 	const { data: skillData, loading: skillLoading } = useQuery(gql(listSkills))
 
+	// The employee filter is used to get specific employees by employee info
+	const [employeeFilter, setEmployeeFilter] = useState({})
+	const { data: filteredEmployeeData, loading: filterEmployeeLoading } = useQuery(gql(listEmployees), { variables: { filter: employeeFilter } })
+
+	// The skill filter is used to get specific employees by skill required
+	const [skillFilter, setSkillFilter] = useState({})
+	const { data: filteredSkillData, loading: filterSkillLoading } = useQuery(gql(listSkills), { variables: { filter: skillFilter } })
+	
 	// Initialize fields (employee and skills) of the form
 	const [employee, setEmployee] = useState({ id: '', firstname: '', lastname: '' })
 	const [skills, setSkills] = useState([])
@@ -37,7 +46,7 @@ const Menu = ({ callback }) => {
 	const [loading, setLoading] = useState(false)
 
 	// The alert and warningType state controls the display of warning message
-	const [alert, setAlert] = useState(false)
+	const [alert, setAlert] = useState({ search: false, add: false })
 	const [warningType, setWarningType] = useState('')
 
 	// Generate mutations that can add employee, skill, and employee-skill link
@@ -45,43 +54,18 @@ const Menu = ({ callback }) => {
 	const [addOneSkill] = useMutation(gql(createSkill))
 	const [addSkillOwner] = useMutation(gql(createSkillOwner))
 
-	// Function handleClear resets all the fields
-	const handleClear = () => {
-		setEmployee({ id: '', firstname: '', lastname: '' })
-		setSkills([])
-		setSkillString('')
-	}
-
-	// Handle search query by filtering all employees
-	const handleSearch = () => {
-
-		// Funtion skillCheck() checks if the current employee has all the skills in the query
-		function skillCheck(ownedSkill) {
-			refetch()
-			let skillQuery = skills
-
-			for (let skill of ownedSkill) {
-				if (skillQuery.includes(skill.skillID)) {
-					skillQuery = skillQuery.filter((item) => (item !== skill.skillID))
-				}
-			}
-
-			return skillQuery.length === 0
+	// Update the data display after filtering or reset
+	useEffect(() => {
+		if (skillFilter) {
+			callback(filteredSkillData)
 		}
+		else if (employeeFilter.firstname || employeeFilter.lastname || employeeFilter.id) {
+			callback(filteredEmployeeData)
+		}
+		else callback(data)
+	}, [skillFilter, employeeFilter, callback, data, filteredSkillData, filteredEmployeeData])
 
-		// Filtered data is the list of employees fit the query
-		let filteredData = { listEmployees: { items: [] } }
-
-		filteredData.listEmployees.items = [
-			...data.listEmployees.items.filter(item =>
-				(!employee.id || employee.id === item.id)
-				&& (!employee.firstname || employee.firstname === item.firstname)
-				&& (!employee.lastname || employee.lastname === item.lastname)
-				&& (skills.length === 0 || skillCheck(item.skills.items))
-			)
-		]
-		callback(filteredData)
-	}
+	
 
 	// Contains all skills currently in database
 	let allSkills = []
@@ -90,6 +74,39 @@ const Menu = ({ callback }) => {
 			allSkills.push(skill.id)
 		}
 	}
+
+	// Function handleClear resets all the fields
+	const handleClear = () => {
+		setEmployee({ id: '', firstname: '', lastname: '' })
+		setSkills([])
+		setSkillString('')
+		setEmployeeFilter({})
+		setSkillFilter({})
+	}
+
+	// Handle search query by filtering all employees
+	const handleSearchEmployee = async () => {
+
+		// Set the employee filter according to search entries
+		if (employee.id) {
+			setEmployeeFilter({ id: { eq: employee.id } })
+		} else {
+			let query = {}
+			for (let info in employee) {
+				if (employee[info]) {
+					query[info] = { contains: employee[info] }
+				}
+			}
+			if (query) setEmployeeFilter(query)
+		}
+	}
+
+	// Handle search query by specifying one skill
+	const handleSearchSkill = async() => {
+		let query = {name: {contains: skills[0]}}
+		if (query) setSkillFilter(query)
+	}
+
 
 	// onChange handler that updates form fields
 	function setEmployeeInput(key, value) {
@@ -138,7 +155,7 @@ const Menu = ({ callback }) => {
 		setLoading(false)
 
 		// Show success message
-		setAlert(true)
+		setAlert({ ...alert, add: true })
 		setWarningType('success')
 
 		// Reset all the fields
@@ -152,40 +169,63 @@ const Menu = ({ callback }) => {
 			<Accordion square expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
 				<AccordionSummary aria-controls="panel1d-content" id="panel1d-header">
 					<SearchIcon style={{ marginRight: 10 }} />
-					<Typography>Lookup Employee</Typography>
+					<Typography>Search by Employee</Typography>
 				</AccordionSummary>
 				<AccordionDetails>
-					<div>
-						<Typography> Employee Query: </Typography>
+					{filterEmployeeLoading ? <Loader /> :
 						<div>
-							<TextField label='Employee ID' value={employee.id}
-								onChange={event => setEmployeeInput('id', event.target.value)} />
+							<Typography> Employee Query: </Typography>
+							<div>
+								<TextField label='Employee ID' value={employee.id}
+									onChange={event => setEmployeeInput('id', event.target.value)} />
+							</div>
+							<div>
+								<TextField label='First Name' value={employee.firstname}
+									onChange={event => setEmployeeInput('firstname', event.target.value)} />
+							</div>
+							<div>
+								<TextField label='Last Name' value={employee.lastname}
+									onChange={event => setEmployeeInput('lastname', event.target.value)} />
+							</div>
+							{/* <div>
+								<TextField label='Skill' value={skillString}
+									onChange={event => { setSkillInput(event.target.value) }} />
+							</div> */}
+							<div>
+								<Button variant='outlined' onClick={handleClear} style={{ marginTop: '20px', float: "left" }}> Clear </Button>
+								<Button variant='outlined' onClick={handleSearchEmployee} style={{ marginTop: '20px', float: "right" }}> Search </Button>
+							</div>
 						</div>
-						<div>
-							<TextField label='First Name' value={employee.firstname}
-								onChange={event => setEmployeeInput('firstname', event.target.value)} />
-						</div>
-						<div>
-							<TextField label='Last Name' value={employee.lastname}
-								onChange={event => setEmployeeInput('lastname', event.target.value)} />
-						</div>
-						<div>
-							<TextField label='Skill' value={skillString}
-								onChange={event => { setSkillInput(event.target.value) }} />
-						</div>
-						<div>
-							<Button variant='outlined' onClick={handleClear} style={{ marginTop: '20px', float: "left" }}> Clear </Button>
-							<Button variant='outlined' onClick={handleSearch} style={{ marginTop: '20px', float: "right" }}> Search </Button>
-						</div>
-					</div>
+					}
 				</AccordionDetails>
 			</Accordion>
 			<Accordion square expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
+				<AccordionSummary aria-controls="panel1d-content" id="panel1d-header">
+					<BuildIcon style={{ marginRight: 10 }} />
+					<Typography>Search by Skill</Typography>
+				</AccordionSummary>
+				<AccordionDetails>
+					{filterSkillLoading ? <Loader /> :
+						<div>
+							<Typography> Specify One Skill: </Typography>
+							<div>
+								<TextField label='Skill' value={skillString}
+									onChange={event => { setSkillInput(event.target.value) }} />
+							</div>
+							<div>
+								<Button variant='outlined' onClick={handleClear} style={{ marginTop: '20px', float: "left" }}> Clear </Button>
+								<Button variant='outlined' onClick={handleSearchSkill} style={{ marginTop: '20px', float: "right" }}> Search </Button>
+							</div>
+						</div>
+					}
+				</AccordionDetails>
+			</Accordion>
+			<Accordion square expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
 				<AccordionSummary aria-controls="panel2d-content" id="panel2d-header">
 					<PersonAddIcon style={{ marginRight: 10 }} />
 					<Typography>Add Employee</Typography>
 				</AccordionSummary>
-				{alert && <div><SimpleAlerts type={warningType} closeCallback={() => setAlert(false)} /></div>}
+				{alert.add && <div><SimpleAlerts type={warningType} closeCallback={() => setAlert(false)} /></div>}
 				<AccordionDetails>
 
 					{!loading ?
@@ -217,6 +257,7 @@ const Menu = ({ callback }) => {
 					}
 				</AccordionDetails>
 			</Accordion>
+
 		</div>
 	)
 }

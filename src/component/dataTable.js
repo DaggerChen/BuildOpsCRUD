@@ -11,12 +11,20 @@ const DataTable = ({ data: dataDisplay }) => {
 	// Initialize DataTable and refresh data when the provided dataDisplay is changed
 	useEffect(() => {
 		let tempRows = []
-		const items = dataDisplay.listEmployees.items
+		const items = dataDisplay.listSkills ? dataDisplay.listSkills.items[0].employees.items:dataDisplay.listEmployees.items
 		for (let employee of items) {
 			let skills = []
-			for (let skill of employee.skills.items) {
-				skills.push(skill.skillID)
+			if (employee.employee) {
+				employee = employee.employee
+				for (let skill of employee.skills.items) {
+					skills.push(skill.skillID)
+				}
+			} else {
+				for (let skill of employee.skills.items) {
+					skills.push(skill.skillID)
+				}
 			}
+			
 			tempRows.push({
 				id: employee.id, firstName: employee.firstname,
 				lastName: employee.lastname, skills: skills.join(', ')

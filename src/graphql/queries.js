@@ -77,6 +77,18 @@ export const listSkills = /* GraphQL */ `
         id
         name
         employees {
+          items {
+            employee {
+              firstname
+              id
+              lastname
+              skills {
+                items {
+                  skillID
+                }
+              }
+            }
+          }
           nextToken
         }
         createdAt
