@@ -3,15 +3,25 @@ import React, { useEffect, useState } from 'react';
 import { DataGrid } from '@material-ui/data-grid';
 import DeleteButton from './deleteButton';
 import EditDialog from './editDialog';
+import { Snackbar } from '@material-ui/core';
+import SimpleAlerts from './alert';
 
 
 const DataTable = ({ data: dataDisplay }) => {
 	const [rows, setRows] = useState([])
-
+	const [snackOpen, setSnackOpen] = useState(false)
 	// Initialize DataTable and refresh data when the provided dataDisplay is changed
 	useEffect(() => {
 		let tempRows = []
-		const items = dataDisplay.listSkills ? dataDisplay.listSkills.items[0].employees.items : dataDisplay.listEmployees.items
+		let items = []
+
+		// Set items base on types of data to display
+		if (dataDisplay.listSkills) {
+			items = dataDisplay.listSkills.items[0] ? dataDisplay.listSkills.items[0].employees.items : []
+		} else {
+			items = dataDisplay.listEmployees.items
+		}
+		
 		for (let employee of items) {
 			let skills = []
 			if (employee.employee) {
@@ -36,6 +46,7 @@ const DataTable = ({ data: dataDisplay }) => {
 	// Callback function provided to delete button that updates the data in table
 	const deleteCallback = (id) => {
 		setRows([...rows.filter((row) => (row.id !== id))])
+		setSnackOpen(true)
 	}
 
 	// Callback function provided to update button that updates the data in table
@@ -48,6 +59,7 @@ const DataTable = ({ data: dataDisplay }) => {
 			}
 			return row
 		})])
+		setSnackOpen(true)
 	}
 
 	// Initialize fields in columns of DataGrid
@@ -83,11 +95,14 @@ const DataTable = ({ data: dataDisplay }) => {
 	]
 
 	return (
-		<div style={{ height: 600, width: '100%' }}>
+		<div style={{ height: 700, width: '100%' }}>
 			<DataGrid rows={rows} columns={columns.map((column) => ({
 				...column,
 				disableClickEventBubbling: true,
 			}))} pageSize={10} />
+			<Snackbar open={snackOpen} autoHideDuration={4000} onClose={()=>{setSnackOpen(false)}}>
+				<SimpleAlerts />
+			</Snackbar>
 		</div>
 	)
 }

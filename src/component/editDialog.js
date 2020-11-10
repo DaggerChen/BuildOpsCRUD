@@ -32,10 +32,6 @@ const EditDialog = ({ employeeData, callback }) => {
 	const [employee, setEmployee] = useState({ id: employeeData.data.id, firstname: employeeData.data.firstName, lastname: employeeData.data.lastName })
 	const [skills, setSkills] = useState(currentSkills)
 
-	// The alert and warningType state controls the display of warning message
-	const [alert, setAlert] = useState(false)
-	const [warningType, setWarningType] = useState('')
-
 	// allSkills contains all skills stored in database
 	let allSkills = []
 	if (!skillLoading) {
@@ -50,7 +46,6 @@ const EditDialog = ({ employeeData, callback }) => {
 
 	const handleClose = () => {
 		setOpen(false)
-		setAlert(false)
 	}
 
 	const handleUpload = async (e) => {
@@ -79,8 +74,6 @@ const EditDialog = ({ employeeData, callback }) => {
 				}
 			}
 		}
-		setAlert(true)
-		setWarningType('success')
 		// Pass the value back to DataTable and update display
 		callback(employee, skills)
 		setLoading(false)
@@ -105,7 +98,6 @@ const EditDialog = ({ employeeData, callback }) => {
 				Update
       </Button>
 			<Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-				{alert ? <SimpleAlerts type={warningType} closeCallback={() => setAlert(false)} /> :
 					<div>
 						<DialogTitle id="form-dialog-title">Edit Information of {[employeeData.data.firstName, employeeData.data.lastName].join(' ')}</DialogTitle>
 						<DialogContent>
@@ -158,7 +150,6 @@ const EditDialog = ({ employeeData, callback }) => {
 							}
 						</DialogContent>
 					</div>
-				}
 			</Dialog>
 		</span>
 	)

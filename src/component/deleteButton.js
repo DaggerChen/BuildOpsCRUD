@@ -7,15 +7,15 @@ import { removeEmployee } from '../functions/mutationFunctions';
 
 import { Button, Dialog } from '@material-ui/core';
 import Loader from './loader';
-import SimpleAlerts from './alert';
+
 
 
 const DeleteButton = ({ employeeID, skillID, callback }) => {
 	const [removeLink, { loading }] = useMutation(gql(deleteSkillOwner))
 
-	// The alert and warningType state controls the display of warning message
-	const [alert, setAlert] = useState(false)
+	// Controls the loading display
 	const [open, setOpen] = useState(false)
+
 	// Delete the chosen employee and the related employee-skill links
 	const handleDelete = async (deleteEmployee) => {
 		// Display loader
@@ -26,7 +26,9 @@ const DeleteButton = ({ employeeID, skillID, callback }) => {
 		await removeEmployee({ employeeID }, deleteEmployee)
 
 		// Show success message
-		setAlert(true)
+		setOpen(false)
+
+		callback(employeeID);
 	}
 
 	return (
@@ -46,9 +48,8 @@ const DeleteButton = ({ employeeID, skillID, callback }) => {
 								<div style={{ display: 'flex', justifyContent: 'center', minHeight: 300, minWidth: 300 }}>
 									<Loader />
 								</div>}
-							{alert && <SimpleAlerts closeCallback={() => { setAlert(false); callback(employeeID) }} />}
-						</Dialog>
 
+						</Dialog>
 					</>
 				)
 			}}
