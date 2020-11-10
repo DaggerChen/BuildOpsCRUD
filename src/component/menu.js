@@ -226,6 +226,7 @@ const Menu = ({ callback }) => {
 					{!loading ?
 						<form onSubmit={event => handleAddEmployee(event)}>
 							<Typography> New Employee: </Typography>
+							<Typography color='textSecondary' variant='body2'> Separate skills with comma(,) </Typography>
 							<div>
 								<TextField label='Employee ID' value={employee.id} required
 									onChange={event => setEmployeeInput('id', event.target.value)} />
@@ -239,7 +240,7 @@ const Menu = ({ callback }) => {
 									onChange={event => setEmployeeInput('lastname', event.target.value)} />
 							</div>
 							<div>
-								<TextField label='Skill' value={skillString}
+								<TextField label='Skills' value={skillString}
 									onChange={event => { setSkillInput(event.target.value) }} />
 							</div>
 							<div>
