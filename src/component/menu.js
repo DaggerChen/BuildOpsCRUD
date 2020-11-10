@@ -56,7 +56,7 @@ const Menu = ({ callback }) => {
 
 	// Update the data display after filtering or reset
 	useEffect(() => {
-		if (skillFilter) {
+		if (skillFilter.name) {
 			callback(filteredSkillData)
 		}
 		else if (employeeFilter.firstname || employeeFilter.lastname || employeeFilter.id) {
@@ -128,8 +128,9 @@ const Menu = ({ callback }) => {
 		// If the id of the new employee is not unique, show warn message and stop adding it
 		for (let existingEmployee of data.listEmployees.items) {
 			if (existingEmployee.id === employee.id) {
-				setAlert(true)
+				setAlert({add:true})
 				setWarningType('warning')
+				setLoading(false)
 				handleClear()
 				return
 			}
@@ -219,7 +220,7 @@ const Menu = ({ callback }) => {
 					<PersonAddIcon style={{ marginRight: 10 }} />
 					<Typography>Add Employee</Typography>
 				</AccordionSummary>
-				{alert.add && <div><SimpleAlerts type={warningType} closeCallback={() => setAlert(false)} /></div>}
+				{alert.add && <div><SimpleAlerts type={warningType} closeCallback={() => setAlert({add: false})} /></div>}
 				<AccordionDetails>
 
 					{!loading ?

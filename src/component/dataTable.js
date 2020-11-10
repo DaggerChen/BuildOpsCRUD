@@ -87,7 +87,7 @@ const DataTable = ({ data: dataDisplay }) => {
 			<DataGrid rows={rows} columns={columns.map((column) => ({
 				...column,
 				disableClickEventBubbling: true,
-			}))} pageSize={20} />
+			}))} pageSize={10} />
 		</div>
 	)
 }
